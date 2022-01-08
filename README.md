@@ -51,4 +51,6 @@
 2. **Thomas H. Cormen, Introduction to Algorithms (Third Edition)**. Великий, детальний та фундаментальний підручник. Особливо цікавий різноманітними вправами в кінці кожного розділу
 3. **Aditya Y. Bhargava. Grokking algorithms: An illustrated guide for programmers and other curious people**. Коротший разів в 6, просто описаний посібник з прикладами на пайтоні. Цікавий, ілсютрований, чудово підходить для читання від А до Я
 
+Я би рекомендував читати ці книжки в наступному порядку: спочатку Grokking Algorithms, потім підручник Скієни, і потім Кормен. 
+
 ![wdawd](./res/books.png)
