@@ -21,3 +21,4 @@ Console.WriteLine("Hello, C#!");
 8. Вітаємо, ви створили першу програму на C#!
 
 ### Заливання першого проекту на git
+Дивіться: [git_quickstart.md - заливання першого проекту на Git](git_quickstart.md)
