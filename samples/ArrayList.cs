@@ -44,6 +44,29 @@
             }
         }
 
+        public int GetAt(int index)
+        {
+            return _array[index];
+        }
+
+        public int IndexOf(int element)
+        {
+            for (var i = 0; i < _array.Length; i++)
+            {
+                if (_array[i] == element)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        public bool Contains(int element)
+        {
+            return IndexOf(element) != -1;
+        }
+
         public int Count()
         {
             return _pointer;
