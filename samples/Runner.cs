@@ -1,12 +1,12 @@
 using System;
 using Samples;
 
-var generator = new MazeGenerator();
-var maze = generator.Generate(new MazeGeneratorOptions()
+var generator = new MapGenerator(new MazeGeneratorOptions()
 {
-    Height = 15,
-    Width = 35
+    Height = 35,
+    Width = 90
 });
+var maze = generator.Generate();
 
 PrintMaze(maze);
 
