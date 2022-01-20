@@ -1,4 +1,4 @@
-﻿namespace Samples
+﻿namespace Kse.Algorithms.Samples
 {
     using System;
 

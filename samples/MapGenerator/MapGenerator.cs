@@ -1,4 +1,4 @@
-namespace Samples
+namespace Kse.Algorithms.Samples
 {
     using System;
     using System.Collections.Generic;
@@ -6,34 +6,52 @@ namespace Samples
     public class MapGenerator
     {
         private const string Wall = "█";
+        
+        private const string Space = " ";
 
-        private readonly MazeGeneratorOptions options;
+        private readonly MapGeneratorOptions options;
 
-        public MapGenerator(MazeGeneratorOptions options)
+        private readonly Random random;
+
+        private string[,] maze;
+
+        public MapGenerator(MapGeneratorOptions options)
         {
             this.options = options;
+            random = new Random((int)(options.Seed == -1? DateTime.UtcNow.Ticks : options.Seed));
         }
 
         public string[,] Generate()
         {
-            var maze = new string[options.Width, options.Height];
-            for (int x = 0; x < maze.GetLength(0); x++)
+            maze = new string[options.Width, options.Height];
+            if (options.Type == MapType.Maze)
             {
-                for (int y = 0; y < maze.GetLength(1); y++)
+                return GenerateMaze();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private string[,] GenerateMaze()
+        {
+            for (var x = 0; x < maze.GetLength(0); x++)
+            {
+                for (var y = 0; y < maze.GetLength(1); y++)
                 {
-                    maze[x, y] = (y % 2 == 1 || x % 2 == 1) ? Wall : " ";
+                    maze[x, y] = (y % 2 == 1 || x % 2 == 1) ? Wall : Space;
                 }
             }
 
-            var random = new Random();
-            ExpandFrom(new Point(0,0), new HashSet<Point>());
-            RemoveWalls(0f);
+            ExpandFrom(new Point(0, 0), new List<Point>());
+            RemoveWalls(maze, options.Noise);
             return maze;
 
-            void ExpandFrom(Point point, HashSet<Point> visited)
+            void ExpandFrom(Point point, List<Point> visited)
             {
                 visited.Add(point);
-                var neighbours = GetNeighbours(point.X, point.Y, maze).ToArray();
+                var neighbours = GetNeighbours(point.Column, point.Row, maze).ToArray();
                 Shuffle(random, neighbours);
                 foreach (var neighbour in neighbours)
                 {
@@ -41,6 +59,7 @@ namespace Samples
                     {
                         continue;
                     }
+
                     RemoveWallBetween(point, neighbour);
                     Console.WriteLine();
                     ExpandFrom(neighbour, visited);
@@ -49,34 +68,33 @@ namespace Samples
 
             void RemoveWallBetween(Point a, Point b)
             {
-                maze[(a.X + b.X) / 2, (a.Y + b.Y) / 2] = " ";
+                maze[(a.Column + b.Column) / 2, (a.Row + b.Row) / 2] = " ";
             }
-            
-            void Shuffle (Random rng, Point[] array)
+
+            void Shuffle(Random rng, Point[] array)
             {
                 var n = array.Length;
-                while (n > 1) 
+                while (n > 1)
                 {
-                    int k = rng.Next(n--);
+                    var k = rng.Next(n--);
                     (array[n], array[k]) = (array[k], array[n]);
-                }
-            }
-            
-            void RemoveWalls(float chance)
-            {
-                for (int y = 0; y < maze.GetLength(1); y++)
-                {
-                    for (int x = 0; x < maze.GetLength(0); x++)
-                    {
-                        if (random.NextDouble() < chance && maze[x, y] == Wall)
-                        {
-                            maze[x, y] = " ";
-                        }
-                    }
                 }
             }
         }
 
+        void RemoveWalls(string[,] maze, float chance)
+        {
+            for (var y = 0; y < maze.GetLength(1); y++)
+            {
+                for (var x = 0; x < maze.GetLength(0); x++)
+                {
+                    if (random.NextDouble() < chance && maze[x, y] == Wall)
+                    {
+                        maze[x, y] = " ";
+                    }
+                }
+            }
+        }
 
         private List<Point> GetNeighbours(int x, int y, string[,] maze)
         {
@@ -99,10 +117,4 @@ namespace Samples
         }
     }
 
-    public class MazeGeneratorOptions
-    {
-        public int Width { get; set; }
-        
-        public int Height { get; set; }
-    }
 }
