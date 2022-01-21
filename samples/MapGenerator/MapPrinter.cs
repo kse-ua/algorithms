@@ -1,6 +1,7 @@
 ﻿namespace Kse.Algorithms.Samples
 {
     using System;
+    using System.Collections.Generic;
 
     public class MapPrinter
     {
