@@ -11,6 +11,10 @@
         public float Noise { get; set; }
 
         public int Seed { get; set; } = -1;
+        
+        public bool AddTraffic { get; set; }
+        
+        public int TrafficSeed { get; set; }
     }
     
     

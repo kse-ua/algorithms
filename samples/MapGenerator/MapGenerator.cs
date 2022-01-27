@@ -6,7 +6,7 @@ namespace Kse.Algorithms.Samples
     public class MapGenerator
     {
         private const string Wall = "█";
-        
+
         private const string Space = " ";
 
         private readonly MapGeneratorOptions options;
@@ -18,7 +18,7 @@ namespace Kse.Algorithms.Samples
         public MapGenerator(MapGeneratorOptions options)
         {
             this.options = options;
-            random = new Random((int)(options.Seed == -1? DateTime.UtcNow.Ticks : options.Seed));
+            random = new Random((int)(options.Seed == -1 ? DateTime.UtcNow.Ticks : options.Seed));
         }
 
         public string[,] Generate()
@@ -45,7 +45,13 @@ namespace Kse.Algorithms.Samples
             }
 
             ExpandFrom(new Point(0, 0), new List<Point>());
-            RemoveWalls(maze, options.Noise);
+            RemoveWalls(options.Noise);
+
+            if (options.AddTraffic)
+            {
+                AddTraffic(options.TrafficSeed);
+            }
+
             return maze;
 
             void ExpandFrom(Point point, List<Point> visited)
@@ -61,7 +67,6 @@ namespace Kse.Algorithms.Samples
                     }
 
                     RemoveWallBetween(point, neighbour);
-                    Console.WriteLine();
                     ExpandFrom(neighbour, visited);
                 }
             }
@@ -82,7 +87,7 @@ namespace Kse.Algorithms.Samples
             }
         }
 
-        void RemoveWalls(string[,] maze, float chance)
+        private void RemoveWalls(float chance)
         {
             for (var y = 0; y < maze.GetLength(1); y++)
             {
@@ -96,25 +101,85 @@ namespace Kse.Algorithms.Samples
             }
         }
 
-        private List<Point> GetNeighbours(int x, int y, string[,] maze)
+        private void AddTraffic(int seed)
+        {
+            var next = GetNextEmpty();
+            var trafficRandom = new Random(options.TrafficSeed);
+            while (next.HasValue)
+            {
+                PaintTrafficDfs(next.Value, trafficRandom.Next(50, 130), trafficRandom.Next(1, 10));
+                next = GetNextEmpty();
+            }
+            
+
+            Point? GetNextEmpty()
+            {
+                for (var y = 0; y < maze.GetLength(1); y++)
+                {
+                    for (var x = 0; x < maze.GetLength(0); x++)
+                    {
+                        if (maze[x, y] == " ")
+                        {
+                            return new Point(x, y);
+                        }
+                    }
+                }
+
+                return null;
+            }
+            
+            void PaintTrafficDfs(Point point, int depth, int value)
+            {
+                var visited = new List<Point>();
+                var stack = new Stack<Point>();
+                stack.Push(point);
+                while (stack.Count > 0 && depth > 0)
+                {
+                    var next = stack.Pop();
+                    if (visited.Contains(next))
+                    {
+                        continue;
+                    }
+
+                    Visit(next);
+                    var neighbours = GetNeighbours(next.Column, next.Row, maze, 1, true);
+                    foreach (var neighbour in neighbours)
+                    {
+                        stack.Push(neighbour);
+                    }
+
+                    void Visit(Point point)
+                    {
+                        maze[point.Column, point.Row] = value.ToString();
+                        depth -= 1;
+                        visited.Add(point);
+                    }
+                }
+            }
+        }
+
+        private List<Point> GetNeighbours(int column, int row, string[,] maze, int offset = 2,
+            bool checkWalls = false)
         {
             var result = new List<Point>();
-            TryAddWithOffset(2, 0);
-            TryAddWithOffset(-2, 0);
-            TryAddWithOffset(0, 2);
-            TryAddWithOffset(0, -2);
+            TryAddWithOffset(offset, 0);
+            TryAddWithOffset(-offset, 0);
+            TryAddWithOffset(0, offset);
+            TryAddWithOffset(0, -offset);
             return result;
 
             void TryAddWithOffset(int offsetX, int offsetY)
             {
-                var newX = x + offsetX;
-                var newY = y + offsetY;
-                if (newX >= 0 && newY >= 0 && newX < maze.GetLength(0) && newY < maze.GetLength(1))
+                var newColumn = column + offsetX;
+                var newRow = row + offsetY;
+                if (newColumn >= 0 && newRow >= 0 && newColumn < maze.GetLength(0) && newRow < maze.GetLength(1))
                 {
-                    result.Add(new Point(newX, newY));
+                    if (!checkWalls || maze[newColumn, newRow] == Space)
+                    {
+                        result.Add(new Point(newColumn, newRow));
+                    }
                 }
             }
         }
     }
-
 }
