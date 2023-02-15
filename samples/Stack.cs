@@ -4,7 +4,7 @@
 
     /// <summary>
     /// This is a simple implementation of a limited capacity stack.
-    /// You can improve it by adding resizing or more additional methods
+    /// You can improve it by adding resizing or mote additional methods
     /// </summary>
     public class Stack
     {
