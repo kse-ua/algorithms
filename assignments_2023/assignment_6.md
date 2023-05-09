@@ -1,4 +1,4 @@
-###### Практична робота №5
+###### Практична робота №6
 ## Розділяй, володарюй, перемножуй
 
 ### Мета роботи:
@@ -19,8 +19,8 @@ public class BigInteger
 
     public BigInteger(string value)
     {
-        // convert here string representation to inner int array
-        // for example, "123434" must be converted to _numbers = {1, 2, 3, 4, 3, 4}
+        // convert here string representation to inner int array IN REVERSED ORDER
+        // for example, "123434" must be converted to _numbers = {4, 3, 4, 3, 2, 1}
     }
 }
 ```
